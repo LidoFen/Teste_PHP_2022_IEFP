@@ -67,31 +67,7 @@ class Vinha {
         }
 
 
-
-        $sql1 = "SELECT id, descricao FROM castas";
-        $result1 = $conn->query($sql1);
-
-
-
-        if ($result1->num_rows > 0) {
-            // output data of each row
-            while($row = $result1->fetch_assoc()) {
-                $msg1 .= "<div class='form-check'>
-                        <input class='form-check-input' type='checkbox' value='".$row['id']."' id='castaEdit".$row['id']."'>
-                        <label class='form-check-label' for=''>
-                            ".$row['descricao']." 
-                        </label>
-                        </div>";
-            }
-        } else {
-            $msg1 = "Sem tipos de Castas registados!";
-        }
-
-        $conn->close();
-
-        $resp = json_encode(array("msg" => $msg, "msg1" => $msg1));
-
-        return ($resp);
+        return ($msg);
     }
 
     function uploads($foto, $descricaoVinha){
@@ -565,7 +541,7 @@ class Vinha {
         $msg = "";
         
 
-        $sql = "SELECT vinhos.id AS id_vinho, vinhos.total, vinha.id AS id_vinha, vinhos.nome FROM vinhos INNER JOIN vindima ON vinhos.id_vindima = vindima.id INNER JOIN vinha ON vindima.id_vinha = vinha.id ORDER BY id_vinho ASC";
+        $sql = "SELECT vinhos.id AS id_vinho, vinhos.total, vinha.id AS id_vinha, vinhos.nome, ano.descricao AS ano FROM vinhos INNER JOIN vindima ON vinhos.id_vindima = vindima.id INNER JOIN ano ON vindima.id_ano = ano.id INNER JOIN vinha ON vindima.id_vinha = vinha.id ORDER BY id_vinho ASC";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
@@ -743,6 +719,70 @@ class Vinha {
         ));
     
         return ($res);
+    }
+
+    function getCastas1($idVinha) {
+
+        global $conn;
+        $msg = "";
+
+        $sql = "SELECT * 
+        FROM (
+            SELECT castas.id, castas.descricao, 1 as indice
+            FROM castas 
+            INNER JOIN vinhas_castas 
+            ON castas.id = vinhas_castas.id_casta 
+            INNER JOIN vinha 
+            ON vinhas_castas.id_vinha = vinha.id 
+            WHERE vinha.id = ".$idVinha."
+            
+            UNION
+            
+            SELECT castas.id, castas.descricao, 0 as indice
+            FROM castas
+            WHERE castas.id NOT IN (
+                SELECT castas.id 
+                FROM castas 
+                INNER JOIN vinhas_castas 
+                ON castas.id = vinhas_castas.id_casta 
+                INNER JOIN vinha 
+                ON vinhas_castas.id_vinha = vinha.id 
+                WHERE vinha.id = ".$idVinha."
+            )
+        ) AS temp
+        
+        ORDER BY temp.id ASC";
+        $result = $conn->query($sql);
+
+
+        if ($result->num_rows > 0) {
+
+            while($row = $result->fetch_assoc()) {
+
+                if($row['indice'] == 0) {
+                    $msg .= "<div class='form-check'>
+                    <input class='form-check-input' type='checkbox' value='".$row['id']."' id='castaEdit".$row['id']."'>
+                    <label class='form-check-label' for=''>
+                        ".$row['descricao']." 
+                    </label>
+                    </div>";
+                } else {
+                    $msg .= "<div class='form-check'>
+                    <input class='form-check-input' type='checkbox' value='".$row['id']."' id='castaEdit".$row['id']."' checked>
+                    <label class='form-check-label' for=''>
+                        ".$row['descricao']." 
+                    </label>
+                    </div>";                }
+            }
+        } else {
+            $msg = "Sem tipos de Castas registados!";
+        }
+
+        $conn->close();
+
+        
+
+        return ($msg);
     }
 
 }
