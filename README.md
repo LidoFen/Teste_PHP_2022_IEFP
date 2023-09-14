@@ -6,7 +6,7 @@ Deverá entregar um ficheiro em formato ZIP com o nome ufcd5417_nomedoformando e
 deste terão de estar em formato ZIP os ficheiros do projecto e um em formato SQL.
 Qualquer tentativa de plágio será punida com a anulação da prova.
 
-Grupo I
+Grupo I<br>
 A Empresa Alentejo Winery pretende um sistema para gerir a campanha das vindimas, para
 esse efeito foi disponibilizada a base de dados wineryAlentejo e o sistema pedido tem os
 seguintes requisitos:
