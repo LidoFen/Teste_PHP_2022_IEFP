@@ -114,6 +114,12 @@ if ($_POST['op'] == 1) {
 
     echo($res);
 
+}else if($_POST['op'] == 17){
+
+    $res = $vinha -> getCastas1($_POST['idVinha']);
+
+    echo($res);
+
 }
 
 

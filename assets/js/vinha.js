@@ -63,14 +63,34 @@ function getCastas() {
     })
 
         .done(function (msg) {
-            
-            let obj = JSON.parse(msg);
-            if(obj.msg) {
-                $('#listaCheckboxes').html(obj.msg);
-            }
+            $('#listaCheckboxes').html(msg);
 
-            if(obj.msg1) {
-                $('#listaCheckboxesEdit').html(obj.msg1);
+        })
+
+        .fail(function (jqXHR, textStatus) {
+            alert("Request failed: " + textStatus);
+        });
+}
+
+function getCastas1(idVinha) {
+
+    let dados = new FormData();
+    dados.append("op", 17);
+    dados.append("idVinha", idVinha)
+
+    $.ajax({
+        url: "controller/controllerVinha.php",
+        method: "POST",
+        data: dados,
+        dataType: "html",
+        cache: false,
+        contentType: false,
+        processData: false
+    })
+
+        .done(function (msg) {
+            if(msg) {
+                $('#listaCheckboxesEdit').html(msg);
             }
 
         })
@@ -231,6 +251,7 @@ function getDadosVinha(id) {
             $('#dataPlantacaoVinhaEdit').val(obj.dadosVinha.data_plantacao);
             $('#anoPrimeiraColheitaVinhaEdit').val(obj.dadosVinha.ano_p_colheita);
             $('#fotoVinhaAtualEdit').attr('src', obj.dadosVinha.foto);
+            getCastas1(obj.dadosVinha.id);
 
             $('#modalVinha').modal('show');
 
@@ -260,6 +281,8 @@ function guardaEdit(id) {
             temp.push($("#castaEdit" + (i + 1)).val());
         }
     }
+
+    console.log(temp);
 
     
 
